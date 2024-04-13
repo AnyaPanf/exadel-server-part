@@ -1,30 +1,28 @@
-import express, { Express, Request, Response }from 'express'
+import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv';
-import { documents } from '../documents/documentsRouter';
 import bodyParser from 'body-parser';
-import { routes } from '../routes';
+import { documents } from '../documents/documentsRouter';
+import cors from 'cors'
 
 const app: Express = express();
 const port = 3000;
-// dotenv.config();
+dotenv.config();
 
 // body-parser
-// app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
-// app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-// dotenv.config();
+app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+dotenv.config();
 
 // routes
-app.use('/', routes);
+app.use(express.json())
+app.use(cors({
+    origin: "http://localhost:3000/"
+}))
+app.use('/', documents);
 
 // start the server
-app.listen(3000, () => {
+app.listen(process.env.BACK_PORT, () => {
     console.log(
-        "server running : http://localhost:3000"
+        `server running : http://${process.env.BACK_HOST}:${process.env.BACK_PORT}`
     );
 });
-
-// app.listen(dotenv.env.BACK_PORT, () => {
-//     console.log(
-//         `server running : http://${dotenv.env.BACK_HOST}:${dotenv.env.BACK_PORT}`
-//     );
-// });
