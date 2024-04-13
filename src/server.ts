@@ -5,6 +5,7 @@ import { documents } from '../documents/documentsRouter';
 import cors from 'cors'
 
 const app: Express = express();
+app.use(cors())
 const port = 3000;
 dotenv.config();
 
@@ -15,9 +16,6 @@ dotenv.config();
 
 // routes
 app.use(express.json())
-app.use(cors({
-    origin: "http://localhost:3000/"
-}))
 app.use('/', documents);
 
 // start the server

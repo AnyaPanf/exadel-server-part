@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express'
+import { Request, Response } from 'express'
 
 // const users = []
 
@@ -11,15 +11,14 @@ import express, { Request, Response } from 'express'
 //     },]
 //     users.push(newUser)
 // }
-// тут, наверное должна быть ДБ, пока сделала так, чтобы просто работало
+// тут, наверное должна быть бд, пока сделала так, чтобы просто работало
 
 export const testPostDocument = (req: Request, res: Response) => {
     try {
         // const { name, email, password } = req.body
         // saveUser(name, email, password)
-        res.send('User is successfully registered');
+        res.status(200).send('Everything is correct!');
     } catch (error) {
-        res.send(error);
-        throw new Error('Oops! Something went wrong!');
+        res.status(404).send(`Oops! There is an error: ${error}`);
     }
 };

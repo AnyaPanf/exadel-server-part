@@ -1,11 +1,17 @@
 import { Request, Response } from 'express'
 import { Router } from 'express';
 import { testPostDocument } from './documentsController';
+import cors from 'cors'
 
 export const documents = Router();
 
-documents.get('/', (req: Request, res: Response): void => {
+const corsOptions = {
+  origin: 'http://localhost:5173/',
+  optionsSuccessStatus: 200
+}
+
+documents.get('/', cors(corsOptions), (req: Request, res: Response): void => {
   res.send("What's up doc ?!");
 });
 
-documents.post("/", testPostDocument)
+documents.post("/", testPostDocument);
