@@ -1,8 +1,9 @@
 import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-import { documents } from '../documents/documentsRouter';
+import { documents } from './documents/documentsRouter';
 import cors from 'cors'
+import path from 'path';
 
 const app: Express = express();
 app.use(cors())
@@ -15,8 +16,8 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 dotenv.config();
 
 // routes
-app.use(express.json())
 app.use('/', documents);
+app.use('/', express.static(path.join(__dirname, 'uploadedFiles')))
 
 // start the server
 app.listen(process.env.BACK_PORT, () => {
