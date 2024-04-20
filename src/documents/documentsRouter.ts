@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { Router } from 'express';
-import { testPostDocument, Data } from './documentsController';
+import { upload, testPostDocument } from './documentsController';
 import cors from 'cors'
 
 export const documents = Router();
@@ -14,4 +14,4 @@ documents.get('/', cors(corsOptions), (req: Request, res: Response): void => {
   res.send("What's up doc ?!");
 });
 
-documents.post("/", Data.any(), testPostDocument) 
+documents.post("/", upload.single('file'), testPostDocument) 
