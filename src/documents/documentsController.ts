@@ -30,10 +30,12 @@ export const upload = multer({ storage: storage })
 
 export const testPostDocument = (req: Request, res: Response) => {
     try {
-        const db = new sqlite3.Database('../all_documents.db');
+        const db = new sqlite3.Database('../uploadedFiles.db');
         console.log(req.file);
         const query = `INSERT INTO documents (name) VALUES ('${req.file?.filename}')`;
         db.run(query);
+        console.log(db);
+        
         db.close();
         res.status(200).send('Your file is successfully uploaded!');
     } catch (error) {
