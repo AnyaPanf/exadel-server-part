@@ -18,7 +18,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "multer": "^1.4.5-lts.1"
+    "fs": "^0.0.1-security",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.7",
+    "ts-compiler": "^2.0.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -27,6 +30,6 @@
     "@types/node": "^20.12.7",
     "tslint": "^6.1.3",
     "tsx": "^4.7.1",
-    "typescript": "^5.4.4"
+    "typescript": "^5.4.5"
   }
 }

@@ -2,7 +2,6 @@ import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv';
 import { documents } from './documents/documentsRouter';
 import cors from 'cors'
-import path from 'path';
 
 const app: Express = express();
 app.use(cors())
@@ -12,7 +11,7 @@ app.use(express.json());
 
 // routes
 app.use('/', documents);
-app.use('/', express.static(path.join(__dirname, 'uploadedFiles/')))
+app.use(express.static('public/files'))
 
 // start the server
 app.listen(process.env.BACK_PORT, () => {
