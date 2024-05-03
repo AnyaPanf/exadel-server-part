@@ -1,6 +1,8 @@
+import { strict } from 'assert';
 import { Request, Response } from 'express'
 import multer from "multer";
 const sqlite3 = require('sqlite3').verbose();
+import fs from 'fs';
 
 //multer
 const storage = multer.diskStorage({
@@ -28,7 +30,7 @@ export const testPostDocument = (req: Request, res: Response) => {
 
 export const getAllFiles = (req: Request, res: Response) => {
     const db = new sqlite3.Database('./uploadedFiles.db');
-    const sql = `SELECT DISTINCT id FROM documents
+    const sql = `SELECT * FROM documents
            ORDER BY created_at DESC`;
 
     const documentsArr: {
@@ -36,11 +38,45 @@ export const getAllFiles = (req: Request, res: Response) => {
     }[] = []
 
     db.all(sql, [], (err: string, rows: { id: number; name: string; created_at: number; }[]) => {
-        rows.forEach((row: {id: number, name: string, created_at: number}) => {
+        rows.forEach((row: { id: number, name: string, created_at: number }) => {
             documentsArr.push(row)
         });
+        res.status(200).send(documentsArr);
     });
     db.close();
-    res.status(200).send(documentsArr);
 };
 
+export const deleteDocument = (req: Request, res: Response) => {
+    const docId = Number(req.params.id)
+    const docName = req.params.name
+    const db = new sqlite3.Database('./uploadedFiles.db');
+    const sql = `DELETE FROM documents WHERE id = ${docId}`;
+    db.run(sql);
+    res.status(200).send('DocumentDocument deleted successfully');
+    db.close();
+
+    fs.unlink(`/public/files/${docName}`, (err) => {
+        if (err) {
+            console.error(err);
+        }
+    });
+}
+
+export const downloadDocument = (req: Request, res: Response) => {
+    //1
+    // const blob = new Blob([fileData], { type: 'application/octet-stream' });
+    // const link = document.createElement('a');
+    // link.href = URL.createObjectURL(blob);
+    // link.download = req.params.name;
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+
+    //2
+    // const url = window.URL.createObjectURL(new Blob(['http://localhost:3000/files']));
+    // const link = document.createElement("a");
+    // link.href = url;
+    // link.setAttribute("download", "image.png");
+    // document.body.appendChild(link);
+    // link.click();
+}
