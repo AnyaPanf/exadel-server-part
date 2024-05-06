@@ -11,6 +11,6 @@ documents.post("/", upload.single('file'), testPostDocument)
 
 documents.get('/', getAllFiles);
 
-documents.delete('/', deleteDocument);
+documents.delete('/:id/:name', deleteDocument);
 
-documents.get('/files', downloadDocument);
+documents.get('/', downloadDocument);

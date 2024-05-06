@@ -47,12 +47,12 @@ export const getAllFiles = (req: Request, res: Response) => {
 };
 
 export const deleteDocument = (req: Request, res: Response) => {
-    const docId = Number(req.params.id)
-    const docName = req.params.name
+    const docId = req.query.id;
+    const docName = req.query.name;
     const db = new sqlite3.Database('./uploadedFiles.db');
     const sql = `DELETE FROM documents WHERE id = ${docId}`;
     db.run(sql);
-    res.status(200).send('DocumentDocument deleted successfully');
+    res.status(200).send('Document deleted successfully');
     db.close();
 
     fs.unlink(`/public/files/${docName}`, (err) => {
