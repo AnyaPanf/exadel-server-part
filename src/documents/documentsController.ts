@@ -3,6 +3,7 @@ import { Request, Response } from 'express'
 import multer from "multer";
 const sqlite3 = require('sqlite3').verbose();
 import fs from 'fs';
+import path from 'node:path';
 
 //multer
 const storage = multer.diskStorage({
@@ -46,7 +47,7 @@ export const getAllFiles = (req: Request, res: Response) => {
     db.close();
 };
 
-export const deleteDocument = (req: Request, res: Response) => {
+export const deleteDocument = async (req: Request, res: Response) => {
     const docId = req.query.id;
     const docName = req.query.name;
     const db = new sqlite3.Database('./uploadedFiles.db');
@@ -55,11 +56,12 @@ export const deleteDocument = (req: Request, res: Response) => {
     res.status(200).send('Document deleted successfully');
     db.close();
 
-    fs.unlink(`/public/files/${docName}`, (err) => {
-        if (err) {
-            console.error(err);
-        }
-    });
+    if (typeof docName !== 'string') {
+        res.status(400).send('Error');
+    } else {
+        const pathToDoc = path.join("public", "files", docName)
+        await fs.promises.unlink(pathToDoc);
+    };
 }
 
 export const downloadDocument = (req: Request, res: Response) => {
