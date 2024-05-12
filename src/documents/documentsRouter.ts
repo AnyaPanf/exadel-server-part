@@ -9,8 +9,8 @@ export const documents = Router();
 
 documents.post("/", upload.single('file'), testPostDocument)
 
-documents.get('/', getAllFiles);
+documents.get('/list', getAllFiles);
 
 documents.delete('/:id/:name', deleteDocument);
 
-documents.get('/', downloadDocument);
+documents.get('/download/:name', downloadDocument);

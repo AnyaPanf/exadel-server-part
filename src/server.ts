@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from 'express'
+import express, { Express } from 'express'
 import dotenv from 'dotenv';
 import { documents } from './documents/documentsRouter';
 import cors from 'cors'
@@ -11,7 +11,7 @@ app.use(express.json());
 
 // routes
 app.use('/', documents);
-app.use(express.static('public/files'))
+app.use(express.static('public'))
 
 // start the server
 app.listen(process.env.BACK_PORT, () => {

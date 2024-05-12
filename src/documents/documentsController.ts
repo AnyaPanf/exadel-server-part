@@ -1,9 +1,9 @@
 import { strict } from 'assert';
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import multer from "multer";
-const sqlite3 = require('sqlite3').verbose();
+import path from 'path';
 import fs from 'fs';
-import path from 'node:path';
+const sqlite3 = require('sqlite3').verbose();
 
 //multer
 const storage = multer.diskStorage({
@@ -17,68 +17,73 @@ const storage = multer.diskStorage({
 
 export const upload = multer({ storage: storage })
 
-export const testPostDocument = (req: Request, res: Response) => {
+export const testPostDocument = (req: Request, res: Response, next: NextFunction) => {
     try {
+        const docName = req.file?.filename;
         const db = new sqlite3.Database('./uploadedFiles.db');
-        const query = `INSERT INTO documents(name) VALUES ('${req.file?.filename}')`;
+        const query = `INSERT INTO documents(name) VALUES ('${docName}')`;
         db.run(query);
         db.close();
         res.status(200).send('Your file is successfully uploaded!');
     } catch (error) {
+        next(alert("Sorry, couldn't upload the document :("))
+        // res.status(404).send(`Oops! There is something wrong: ${error}`);
+    }
+    
+};
+
+export const getAllFiles = (req: Request, res: Response) => {
+    try {
+        const db = new sqlite3.Database('./uploadedFiles.db');
+        const sql = `SELECT * FROM documents
+           ORDER BY created_at DESC`;
+
+        const documentsArr: {
+            id: number, name: string, created_at: number
+        }[] = []
+
+        db.all(sql, [], (err: string, rows: { id: number; name: string; created_at: number; }[]) => {
+            rows.forEach((row: { id: number, name: string, created_at: number }) => {
+                documentsArr.push(row)
+            });
+            res.status(200).send(documentsArr);
+        });
+        db.close();
+    } catch (error) {
+        alert("Sorry, couldn't download your documents :(")
         res.status(404).send(`Oops! There is something wrong: ${error}`);
     }
 };
 
-export const getAllFiles = (req: Request, res: Response) => {
-    const db = new sqlite3.Database('./uploadedFiles.db');
-    const sql = `SELECT * FROM documents
-           ORDER BY created_at DESC`;
+export const deleteDocument = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const docId = req.params.id;
+        const docName = req.params.name;
+        const db = new sqlite3.Database('./uploadedFiles.db');
+        const sql = `DELETE FROM documents WHERE id = ${docId}`;
+        db.run(sql);
+        db.close();
 
-    const documentsArr: {
-        id: number, name: string, created_at: number
-    }[] = []
-
-    db.all(sql, [], (err: string, rows: { id: number; name: string; created_at: number; }[]) => {
-        rows.forEach((row: { id: number, name: string, created_at: number }) => {
-            documentsArr.push(row)
-        });
-        res.status(200).send(documentsArr);
-    });
-    db.close();
-};
-
-export const deleteDocument = async (req: Request, res: Response) => {
-    const docId = req.query.id;
-    const docName = req.query.name;
-    const db = new sqlite3.Database('./uploadedFiles.db');
-    const sql = `DELETE FROM documents WHERE id = ${docId}`;
-    db.run(sql);
-    res.status(200).send('Document deleted successfully');
-    db.close();
-
-    if (typeof docName !== 'string') {
-        res.status(400).send('Error');
-    } else {
-        const pathToDoc = path.join("public", "files", docName)
-        await fs.promises.unlink(pathToDoc);
-    };
+        if (typeof docName !== 'string') {
+            alert("Sorry, couldn't delete the document :(");
+        } else {
+            const pathToDoc = path.join("public", "files", docName)
+            await fs.promises.unlink(pathToDoc);
+        };
+         res.status(200).send('Document deleted successfully');
+    } catch (error) {
+        next(alert("Sorry, couldn't delete the document :("));
+        // res.status(404).send(`Oops! There is something wrong: ${error}`);
+    }
 }
 
-export const downloadDocument = (req: Request, res: Response) => {
-    //1
-    // const blob = new Blob([fileData], { type: 'application/octet-stream' });
-    // const link = document.createElement('a');
-    // link.href = URL.createObjectURL(blob);
-    // link.download = req.params.name;
-    // document.body.appendChild(link);
-    // link.click();
-    // document.body.removeChild(link);
-
-    //2
-    // const url = window.URL.createObjectURL(new Blob(['http://localhost:3000/files']));
-    // const link = document.createElement("a");
-    // link.href = url;
-    // link.setAttribute("download", "image.png");
-    // document.body.appendChild(link);
-    // link.click();
+export const downloadDocument = async (req: Request, res: Response) => {
+    try {
+        const docName = req.params.name;
+        const pathToDoc = path.join("public", "files", docName)
+        res.download(pathToDoc);
+    } catch (error) {
+        alert("Sorry, can't download the document :(")
+        res.status(404).send(`Oops! There is something wrong: ${error}`);
+    }
 }
