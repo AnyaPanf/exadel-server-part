@@ -1,6 +1,6 @@
 # Exadel server part
 
-Server part for Exadl project providing routing and keeping the data base of uploaded files.
+Server part for Exadel project providing routing and keeping the data base of uploaded files.
 
 ## Technologies
 - JavaScript
