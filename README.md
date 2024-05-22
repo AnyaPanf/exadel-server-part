@@ -7,6 +7,7 @@ Server part for Exadel project providing routing and keeping the data base of up
 - Express.js
 - SQLite
 - TypeScript
+- Multer
 
 ## Available Scripts
 In the project directory, you can run:
